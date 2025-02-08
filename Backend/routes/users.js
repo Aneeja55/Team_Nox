@@ -11,7 +11,7 @@ const isAdmin = (req, res, next) => {
 }
 router.post('/', authenticate, isAdmin, userController.register);
 router.get('/scanned-users', authenticate, isAdmin, userController.getScannedUsers);
-router.get('/users', authenticate, isAdmin, userController.users);
+router.get('/', authenticate, isAdmin, userController.users);
 router.delete('/users/:userId', authenticate, isAdmin, userController.deleteUser);
 router.put('/users/:userId', authenticate, isAdmin, userController.updateUser);
 
