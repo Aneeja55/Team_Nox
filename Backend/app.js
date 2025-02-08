@@ -14,6 +14,7 @@ connectDB();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/scan', scanRoutes);
+app.use('/api/users', require('./routes/users'));
 
 
 
