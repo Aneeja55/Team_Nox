@@ -1,31 +1,51 @@
-const Scan= require('../models/Scan');
+const Scan = require('../models/Scan');
+const qrcode = process.env.QR_CODE;
+const moment = require('moment'); // Import moment
 
-exports.scan= async (req, res) => {         //to get info about user and the current time
-    const { type } = req.body;
+exports.scan = async (req, res) => {
+    const { type, code } = req.body;
     const userId = req.userId;
 
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
+    // Validate QR code
+    if (code !== qrcode) {
+        return res.status(400).json({ error: 'Invalid QR code' });
+    }
 
-    if (type === 'lunch' && !(hours >= 11 && minutes >= 30 && hours < 14)) {            //to check whether scanning of lunch time is valid
+    // Get current time using moment
+    const now = moment();
+    const hours = now.hours();
+    const minutes = now.minutes();
+
+    // Validate lunch scanning time
+    if (type === 'lunch' && !(hours >= 11 && minutes >= 30 && hours < 14)) {
         return res.status(400).json({ error: 'Lunch scanning is only allowed between 11:30 AM and 2:00 PM' });
     }
 
-    if (type === 'snack' && !(hours >= 15 && minutes >= 30 && hours < 17)) {            //to check whether scanning of snack time is valid
+    // Validate snack scanning time
+    if (type === 'snack' && !(hours >= 15 && minutes >= 30 && hours < 17)) {
         return res.status(400).json({ error: 'Snack scanning is only allowed between 3:30 PM and 5:00 PM' });
     }
 
     try {
-        const existingScan = await Scan.findOne({ userId, type, date: { $gte: new Date().setHours(0, 0, 0, 0) } });
+        // Check if the user has already scanned today
+        const startOfDay = moment().startOf('day').toDate(); // Start of the current day
+        const existingScan = await Scan.findOne({
+            userId,
+            type,
+            date: { $gte: startOfDay }
+        });
+
         if (existingScan) {
-            return res.status(400).json({ error: 'Already scanned today' });             //to check whether a scanning already occured in the given time
+            return res.status(400).json({ error: 'Already scanned today' });
         }
 
-        const scan = new Scan({ userId, type });
-        await scan.save();                                              //to save current scan
-        res.json({ message: 'Scan successful' });                       
+        // Save the new scan
+        const scan = new Scan({ userId, type, date: now.toDate() }); // Store the current date
+        await scan.save();
+
+        res.json({ message: 'Scan successful' });
     } catch (err) {
+        console.error(err); // Log the error for debugging
         res.status(500).json({ error: 'Error processing scan' });
     }
 };
