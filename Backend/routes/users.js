@@ -12,7 +12,7 @@ const isAdmin = (req, res, next) => {
 router.post('/', authenticate, isAdmin, userController.register);
 router.get('/scanned-users', authenticate, isAdmin, userController.getScannedUsers);
 router.get('/', authenticate, isAdmin, userController.users);
-router.delete('/users/:userId', authenticate, isAdmin, userController.deleteUser);
-router.put('/users/:userId', authenticate, isAdmin, userController.updateUser);
+router.delete('/:userId', authenticate, isAdmin, userController.deleteUser);
+router.put('/:userId', authenticate, isAdmin, userController.updateUser);
 
 module.exports= router;

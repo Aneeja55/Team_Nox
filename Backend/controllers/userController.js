@@ -26,7 +26,9 @@ exports.register = async (req, res) => {
 
 exports.users = async (req, res) => {
     try {
-        const users = await User.find();
+        const users = await User.find({
+            role: { $ne: 'admin' }
+        });
         res.json(users);
     } catch (err) {
         res.status(500).json({ error: 'Error fetching users' });

@@ -11,7 +11,7 @@ const isAdmin = (req, res, next) => {
 }
 router.post('/login', login);
 router.post('/admin/login', adminLogin);
-router.get('/user/protected', authenticate, (req, res) => { res.json({sucess: true, message: 'Protected route accessed successfully' }); });
-router.get('/admin/protected', authenticate, isAdmin, (req, res) => { res.json({sucess: true, message: 'Protected route accessed successfully' }); });
+router.get('/user/protected', authenticate, (req, res) => { res.json({success: true, message: 'Protected route accessed successfully' }); });
+router.get('/admin/protected', authenticate, isAdmin, (req, res) => { res.json({success: true, message: 'Protected route accessed successfully' }); });
 
 module.exports = router;
