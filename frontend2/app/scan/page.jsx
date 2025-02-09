@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import apiUrl from "@/constants/apiUrl";
+import isProtected from '@/hooks/isProtected';
 
 export default function ScanPage() {
     const router = useRouter();
@@ -19,7 +20,18 @@ export default function ScanPage() {
     const [message, setMessage] = useState(""); // To display success/error messages
     const [showCamera, setShowCamera] = useState(true); // Control whether to show the camera
     const [isApiCalled, setIsApiCalled] = useState(false); // Track if API call has been made
-    const [successMessage, setSuccessMessage] = useState(''); // To display success message
+
+    useEffect(() => {
+        const checkProtection = async () => {
+            let protectedStatus = await isProtected();
+            if (!protectedStatus) {
+                localStorage.removeItem('token');
+                router.push('/login');
+            }
+        };
+        checkProtection();
+    }, []);
+
     // Check availability for the selected session (lunch/snack)
     const checkAvailability = async () => {
         try {
@@ -68,6 +80,7 @@ export default function ScanPage() {
 
     // Handle successful QR code scan
     const onScanSuccess = async (decodedText) => {
+        await stopCamera();
         // Prevent multiple API calls
         if (isApiCalled) {
             return;
@@ -75,7 +88,7 @@ export default function ScanPage() {
 
         // Mark API as called
         setIsApiCalled(true);
-        setSuccessMessage("Something Went Wrong");
+
         try {
             const response = await axios.post(apiUrl + '/api/scan', {
                 type: selectedTab, // Include the selected tab (lunch/snack)
@@ -89,18 +102,24 @@ export default function ScanPage() {
 
             setScanResult(decodedText);
             setMessage(response.data.message || ""); // Set the server response message
-            await stopCamera(); // Stop the camera after scanning
             toast.success(response.data.message || "Scan successful!");
-            setSuccessMessage(response.data.message || "Scan successful!");
-            checkAvailability(); // Re-check availability after scanning
+
+            // Stop the camera after scanning
+            await stopCamera();
+
+            // Redirect to the completed page with the success message
+            router.push(`/scan/completed?message=${encodeURIComponent(response.data.message || "Scan successful!")}`);
         } catch (error) {
             console.error('Error processing scan:', error);
             setMessage(error.response?.data?.error || ""); // Set the error message
             toast.error(error.response?.data?.error || "Failed to process scan");
-            await stopCamera(); // Stop the camera even if there's an error
-            setSuccessMessage(error.response?.data?.error || "Failed to process scan");
+
+            // Stop the camera even if there's an error
+            await stopCamera();
+
+            // Redirect to the completed page with the error message
+            router.push(`/scan/completed?message=${encodeURIComponent(error.response?.data?.error || "Failed to process scan")}`);
         }
-        router.push('/scan/completed?message=' + successMessage);
     };
 
     // Handle failed QR code scan
@@ -131,6 +150,12 @@ export default function ScanPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-end mb-6">
+                <Button onClick={() => {
+                    localStorage.clear();
+                    router.push('/login');
+                }}>Logout</Button>
+            </div>
             <div className="max-w-3xl mx-auto">
                 <Card className="bg-white shadow-xl rounded-lg overflow-hidden">
                     <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6">
@@ -172,7 +197,6 @@ export default function ScanPage() {
                 </div>
             );
         }
-
         return (
             <>
                 {/* Show the camera only if `showCamera` is true */}
@@ -199,7 +223,6 @@ export default function ScanPage() {
                         </Button>
                     </div>
                 )}
-
                 {/* Show the response message or refresh button */}
                 {!showCamera && (
                     <div className="mt-4 p-4 bg-green-50 rounded-lg">
