@@ -6,7 +6,7 @@ const Navbar = () => {
         <nav className="bg-gray-800 p-4">
             <div className="container mx-auto flex justify-between items-center">
                 <div className="text-white text-lg font-bold">
-                    <Link href="/">Logo</Link>
+                    <Link href="/">meSSET</Link>
                 </div>
                 <div className="hidden md:flex space-x-4">
                     <Link href="/admin/dashboard" className="text-gray-300 hover:text-white">Dashoard</Link>
