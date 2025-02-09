@@ -117,28 +117,19 @@ Scan qr code using the camera provided which will check whether user has already
 ![WhatsApp Image 2025-02-09 at 11 32 34 AM](https://github.com/user-attachments/assets/d96f1a24-d4aa-4043-b968-3b8766505b89)
 
 
-
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
-
 ### Project Demo
 # Video
-[Add your demo video link here]
-*Explain what the video demonstrates*
+https://drive.google.com/drive/folders/1wFapt07b-orFGPWAYXm6d8hmbS8-B_-X?usp=drive_link
+How the scanning process works and how the message thereafter received 
 
 # Additional Demos
-[Add any extra demo materials/links]
+https://www.figma.com/design/YlndODZ7JhRPBQn1pCNeLw/Untitled?node-id=0-1&m=dev&t=H5hhkkWYD3v2RHrW-1
+This is how we originally intended the project to be. If possible we will modify our existing project as we originally intended
 
 ## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
+- Aneeja J: Backend with node js
+- Anagha TR: Frontend with next js
+- Anaya Wilson: Frontend with next js
 
 ---
 Made with ❤️ at TinkerHub
