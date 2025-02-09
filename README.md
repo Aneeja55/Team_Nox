@@ -61,14 +61,16 @@ Unregistered users cannot access the system.
 After logging in, students are directed to the home page.
 They can choose between Lunch or Snacks.
 3. QR Code Scanning:
-Students scan their unique QR code at the canteen during the scheduled time.
+Students scan the unique QR code provided below at the canteen during the scheduled time.
+![WhatsApp Image 2025-02-09 at 12 01 25 PM](https://github.com/user-attachments/assets/54766282-984b-4db3-8e86-bb6a9220caf2) (Unique QR code)
+
 The system validates the scan and updates the calendar.
-4. Calendar Updates:
+5. Calendar Updates:
 Successful scans are reflected in the calendar with appropriate colors:
 Green for lunch.
 Brown for snacks.
 Red for multiple scans.
-5. Profile and Logout:
+6. Profile and Logout:
 Students can view their profile and meal history.
 They can log out securely when done.
 
