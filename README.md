@@ -12,7 +12,7 @@ meSSET🎯
 - Member 3: Aneeja J - SCMS School of engineering and technology
 
 ### Hosted Project Link
-[mention your project hosted project link here]
+https://team-nox-sable.vercel.app/
 
 ### Project Description
 This project is a Digital Mess Card System built with Next.js and Node.js, designed to streamline meal tracking in a cafeteria or mess. It features user authentication with a login page and a dashboard that includes meal components for Lunch and Snack. Each component flips to reveal a QR code scanner, which validates meal consumption within specific time slots (11:30 AM – 2:00 PM for Lunch and 3:30 PM – 5:00 PM for Snack). Users can scan only once per day; multiple scans trigger a beep sound, and the calendar updates—green for a successful scan and red/brown for multiple scans. The dashboard also includes a menu display and logout option for better user experience.
@@ -85,12 +85,7 @@ For Software:
     express
     jsonwebtoken
     mongoose
-- [Tools used]
-
-For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
+- vs code, mongodb
 
 ### Implementation
 For Software:
@@ -104,30 +99,23 @@ npm run dev
 For Software:
 
 # Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
+![image](https://github.com/user-attachments/assets/5d75d87b-0db4-4f16-8a9e-474b7c4378cf)    Login page
+Login page where user can login
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+![image](https://github.com/user-attachments/assets/fd33b593-01b9-405b-9385-4c659353e098)    Lunch/snack- Home page
+You can choose between lunch and snack and scan qr code
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+
+![image](https://github.com/user-attachments/assets/1390c782-aeaf-4a84-acae-c69a4189b98f)    QR code Scanner
+Scan qr code using the camera provided which will check whether user has already scanned or not
 
 # Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
+![WhatsApp Image 2025-02-09 at 11 29 07 AM](https://github.com/user-attachments/assets/a2fd4a06-0216-4f81-9632-b02ec9d47cf1)
 
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
 
 # Build Photos
-![Team](Add photo of your team here)
+![WhatsApp Image 2025-02-09 at 11 32 34 AM](https://github.com/user-attachments/assets/d96f1a24-d4aa-4043-b968-3b8766505b89)
+
 
 
 ![Components](Add photo of your components here)
