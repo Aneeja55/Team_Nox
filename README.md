@@ -14,13 +14,13 @@
 [mention your project hosted project link here]
 
 ### Project Description
-[2-3 lines about what your project does]
+This project is a Digital Mess Card System built with Next.js and Node.js, designed to streamline meal tracking in a cafeteria or mess. It features user authentication with a login page and a dashboard that includes meal components for Lunch and Snack. Each component flips to reveal a QR code scanner, which validates meal consumption within specific time slots (11:30 AM – 2:00 PM for Lunch and 3:30 PM – 5:00 PM for Snack). Users can scan only once per day; multiple scans trigger a beep sound, and the calendar updates—green for a successful scan and red/brown for multiple scans. The dashboard also includes a menu display and logout option for better user experience.
 
 ### The Problem statement
-[What ridiculous problem are you solving?]
+Managing meal distribution in mess halls manually can lead to inefficiencies, misuse, and inaccurate tracking. Traditional paper-based or manual systems often result in meal duplication, unauthorized access, and difficulty in maintaining records. To address these issues, a Digital Mess Card System is required.
 
 ### The Solution
-[How are you solving it? Keep it fun!]
+Develop a Digital Mess Card System using Next.js and Node.js that enables secure, time-restricted QR-based meal authentication, prevents duplicate scans with alerts, and provides a visual meal tracking calendar for efficient mess management.
 
 ## Technical Details
 ### Technologies/Components Used
