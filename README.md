@@ -1,5 +1,4 @@
-# [Project Name]
-meSSET🎯
+# meSSET🎯
 
 
 ## Basic Details
