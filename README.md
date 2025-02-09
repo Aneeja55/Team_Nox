@@ -54,7 +54,7 @@ Meal History
 Students can securely log out of the system when done.
 
 How It Works
-1. Login:
+1. Login:                            (username:admin, password:123)
 Students log in using their registered credentials.
 Unregistered users cannot access the system.
 2. Home Page:
