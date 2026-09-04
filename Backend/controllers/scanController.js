@@ -2,6 +2,8 @@ const moment = require("moment-timezone");
 const Scan = require("../models/Scan");
 const User = require("../models/User");
 const QRCode = require("qrcode");
+const crypto = require("crypto");
+const QrSession = require("../models/QrSession");
 
 const TIMEZONE = process.env.TIMEZONE || "Asia/Kolkata";
 
@@ -88,11 +90,7 @@ async function scan(req, res) {
     return res.status(400).json({ error: "Invalid scan type" });
   }
 
-  if (!process.env.QR_CODE) {
-    return res.status(500).json({ error: "QR_CODE is not configured" });
-  }
-
-  if (!code || code !== process.env.QR_CODE) {
+  if (!code) {
     return res.status(400).json({ error: "Invalid QR code" });
   }
 
@@ -106,6 +104,31 @@ async function scan(req, res) {
   }
 
   const { start, end, scanDay } = dayBounds(now);
+  const qrSession = await QrSession.findOne({
+    type,
+    scanDay,
+    token: code,
+  }).lean();
+
+  if (!qrSession) {
+    return res.status(400).json({
+      error: "Invalid or expired QR code",
+    });
+  }
+
+  const sessionStarted = now.isSameOrAfter(
+    moment.tz(qrSession.startsAt, TIMEZONE)
+  );
+
+  const sessionActive = now.isSameOrBefore(
+    moment.tz(qrSession.expiresAt, TIMEZONE)
+  );
+
+  if (!sessionStarted || !sessionActive) {
+    return res.status(400).json({
+      error: "This QR code has expired or is not active yet",
+    });
+  }
 
   try {
     // This also handles older records that do not have scanDay.
@@ -234,24 +257,105 @@ async function adminDashboard(req, res) {
   }
 }
 
+async function getOrCreateQrSession(type, day) {
+  const window = getWindow(type, day);
+  const { scanDay } = dayBounds(day);
+
+  let session = await QrSession.findOne({
+    type,
+    scanDay,
+  });
+
+  if (session) {
+    return session;
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+
+  try {
+    session = await QrSession.create({
+      type,
+      scanDay,
+      token,
+      startsAt: window.start.toDate(),
+      expiresAt: window.end.toDate(),
+    });
+  } catch (error) {
+    // Another request may have created the session at the same time.
+    if (error?.code === 11000) {
+      session = await QrSession.findOne({
+        type,
+        scanDay,
+      });
+    } else {
+      throw error;
+    }
+  }
+
+  return session;
+}
+
+function getQrSessionStatus(session, now) {
+  const startsAt = moment.tz(session.startsAt, TIMEZONE);
+  const expiresAt = moment.tz(session.expiresAt, TIMEZONE);
+
+  if (now.isBefore(startsAt)) {
+    return "upcoming";
+  }
+
+  if (now.isSameOrBefore(expiresAt)) {
+    return "active";
+  }
+
+  return "expired";
+}
+
 async function adminQr(req, res) {
-  if (!process.env.QR_CODE) {
-    return res.status(500).json({ error: "QR_CODE is not configured" });
+  const type = String(req.query.type || "").toLowerCase();
+
+  if (!WINDOWS[type]) {
+    return res.status(400).json({
+      error: "Invalid QR session type",
+    });
   }
 
   try {
-    const dataUrl = await QRCode.toDataURL(process.env.QR_CODE, {
+    const now = nowLocal();
+
+    // Creates today's QR only if it doesn't already exist.
+    // Therefore refreshing the admin page does NOT generate a new QR.
+    const session = await getOrCreateQrSession(type, now);
+
+    const status = getQrSessionStatus(session, now);
+
+    const dataUrl = await QRCode.toDataURL(session.token, {
       errorCorrectionLevel: "H",
       width: 420,
       margin: 2,
     });
+
     return res.json({
       dataUrl,
-      value: process.env.QR_CODE,
+      value: session.token,
+      type: session.type,
+      scanDay: session.scanDay,
+      status,
+      label: WINDOWS[type].label,
+      startsAt: moment
+        .tz(session.startsAt, TIMEZONE)
+        .toISOString(),
+      expiresAt: moment
+        .tz(session.expiresAt, TIMEZONE)
+        .toISOString(),
+      serverTime: now.toISOString(),
+      timezone: TIMEZONE,
     });
   } catch (error) {
     console.error("QR generation error:", error);
-    return res.status(500).json({ error: "Unable to generate QR code" });
+
+    return res.status(500).json({
+      error: "Unable to generate QR code",
+    });
   }
 }
 

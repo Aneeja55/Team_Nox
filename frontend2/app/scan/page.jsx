@@ -87,6 +87,55 @@ function MealCalendar({ scans }) {
   );
 }
 
+function playScanSound(type) {
+  try {
+    const AudioContext =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
+
+    const context = new AudioContext();
+
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+
+    const now = context.currentTime;
+
+    if (type === "success") {
+      // Ascending confirmation sound
+      oscillator.frequency.setValueAtTime(700, now);
+      oscillator.frequency.setValueAtTime(1000, now + 0.08);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+
+      oscillator.start(now);
+      oscillator.stop(now + 0.2);
+    } else {
+      // Lower warning sound for duplicate scans
+      oscillator.frequency.setValueAtTime(450, now);
+      oscillator.frequency.setValueAtTime(300, now + 0.12);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+
+      oscillator.start(now);
+      oscillator.stop(now + 0.27);
+    }
+
+    oscillator.addEventListener("ended", () => {
+      context.close().catch(() => {});
+    });
+  } catch (_error) {
+    // Sound is optional; scanning should still work if audio fails.
+  }
+}
+
 export default function ScanPage() {
   const router = useRouter();
   const scannerRef = useRef(null);
@@ -182,15 +231,23 @@ export default function ScanPage() {
               authConfig()
             );
 
+            playScanSound("success");
+
             toast.success(response.data.message);
-            router.push(`/scan/completed?type=${selectedTab}&success=1&time=${encodeURIComponent(response.data.time || "")}`);
+
+            playScanSound("success");
+
+            router.push(
+              `/scan/completed?type=${selectedTab}&success=1&time=${encodeURIComponent(
+                response.data.time || ""
+              )}`
+            );
           } catch (error) {
             const duplicate = error.response?.data?.duplicate;
             const message = error.response?.data?.error || "Scan failed.";
             if (duplicate) {
-              const audio = new Audio("/beep.mp3");
-              audio.play().catch(() => {});
-            }
+              playScanSound("duplicate");
+          }
             toast.error(message);
             await loadData();
           } finally {
