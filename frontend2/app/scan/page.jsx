@@ -156,12 +156,24 @@ export default function ScanPage() {
   const loadData = useCallback(async () => {
     try {
       const config = authConfig();
-      const [profileRes, historyRes, availabilityRes] = await Promise.all([
-        axios.get(`${apiUrl}/api/users/me`, config),
-        axios.get(`${apiUrl}/api/scan/history`, config),
-        axios.get(`${apiUrl}/api/scan/availability?type=${selectedTab}`, config),
-      ]);
-      setProfile(profileRes.data);
+      const profileRes = await axios.get(`${apiUrl}/api/users/me`, config);
+
+if (profileRes.data.role === "admin") {
+  router.replace("/admin/dashboard");
+  return;
+}
+
+const [historyRes, availabilityRes] = await Promise.all([
+  axios.get(`${apiUrl}/api/scan/history`, config),
+  axios.get(
+    `${apiUrl}/api/scan/availability?type=${selectedTab}`,
+    config
+  ),
+]);
+
+setProfile(profileRes.data);
+setHistory(historyRes.data);
+setAvailability(availabilityRes.data);
       setHistory(historyRes.data);
       setAvailability(availabilityRes.data);
     } catch (error) {
@@ -232,10 +244,8 @@ export default function ScanPage() {
             );
 
             playScanSound("success");
-
+            
             toast.success(response.data.message);
-
-            playScanSound("success");
 
             router.push(
               `/scan/completed?type=${selectedTab}&success=1&time=${encodeURIComponent(

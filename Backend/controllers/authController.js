@@ -7,7 +7,7 @@ function makeToken(user) {
   return jwt.sign(
     { userId: user._id.toString(), role: user.role },
     process.env.JWT_SECRET,
-    { expiresIn: "8h" }
+    { expiresIn: "30d" }
   );
 }
 
@@ -28,7 +28,10 @@ async function login(req, res) {
   }
 
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({
+  username,
+  role: "user",
+});
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
