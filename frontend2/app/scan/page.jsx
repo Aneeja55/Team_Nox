@@ -15,6 +15,7 @@ const MEALS = {
   snack: { label: "Snacks", emoji: "☕", window: "3:30 PM – 5:00 PM" },
 };
 
+
 function formatDate(dateString) {
   return new Intl.DateTimeFormat("en-IN", {
     day: "numeric",
@@ -174,8 +175,6 @@ const [historyRes, availabilityRes] = await Promise.all([
 setProfile(profileRes.data);
 setHistory(historyRes.data);
 setAvailability(availabilityRes.data);
-      setHistory(historyRes.data);
-      setAvailability(availabilityRes.data);
     } catch (error) {
       if ([401, 403].includes(error.response?.status)) {
         localStorage.removeItem("token");
@@ -305,6 +304,36 @@ setAvailability(availabilityRes.data);
           <h2 className="mt-1 text-3xl font-black">{profile?.username}</h2>
           <p className="mt-2 text-indigo-100">Show the QR code at the canteen to record your meal.</p>
         </section>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+  <Card className="border-0 shadow-sm">
+    <CardContent className="p-6">
+      <p className="text-sm font-medium text-slate-500">
+        Total Mess Days
+      </p>
+
+      <p className="mt-1 text-sm text-slate-500">
+        days eaten
+      </p>
+    </CardContent>
+  </Card>
+
+  <Card className="border-0 shadow-sm">
+    <CardContent className="p-6">
+      <p className="text-sm font-medium text-slate-500">
+        Meal Records
+      </p>
+
+      <div className="mt-2 text-4xl font-black text-emerald-600">
+        {history.filter((scan) => scan.status === "success").length}
+      </div>
+
+      <p className="mt-1 text-sm text-slate-500">
+        successful meals
+      </p>
+    </CardContent>
+  </Card>
+</div>
 
         <section className="grid gap-6 lg:grid-cols-[1.2fr_.8fr]">
           <Card className="border-0 shadow-sm">

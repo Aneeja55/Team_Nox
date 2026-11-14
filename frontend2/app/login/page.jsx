@@ -35,6 +35,7 @@ export default function LoginPage() {
         username: username.trim(),
         password,
       });
+      localStorage.removeItem("adminToken");
       localStorage.setItem("token", response.data.token);
       toast.success("Welcome to meSSET!");
       router.replace("/scan");

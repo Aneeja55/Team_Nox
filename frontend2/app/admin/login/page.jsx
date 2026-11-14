@@ -35,6 +35,7 @@ export default function AdminLoginPage() {
         username: username.trim(),
         password,
       });
+      localStorage.removeItem("token");
       localStorage.setItem("adminToken", response.data.token);
       router.replace("/admin/dashboard");
     } catch (error) {

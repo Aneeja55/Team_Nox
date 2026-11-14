@@ -1,127 +1,616 @@
- "use client";
+"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Navbar from "@/components/Navbar/Navbar";
-import isProtected from "@/hooks/isProtected";
-import apiUrl from "@/constants/apiUrl";
 
-export default function UsersPage() {
-  const [users, setUsers] = useState([]);
-  const [editing, setEditing] = useState(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [saving, setSaving] = useState(false);
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import apiUrl from "@/constants/apiUrl";
+import isProtected from "@/hooks/isProtected";
+
+export default function AdminUsersPage() {
   const router = useRouter();
 
-  const config = () => ({ headers: { "x-access-token": localStorage.getItem("adminToken") || "" } });
+  const [users, setUsers] = useState([]);
+  const [currentMonth, setCurrentMonth] = useState(null);
+  const [previousMonth, setPreviousMonth] = useState(null);
+  const [showPreviousMonth, setShowPreviousMonth] = useState(false);
 
-  const fetchUsers = useCallback(async () => {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [editingUser, setEditingUser] = useState(null);
+  const [editUsername, setEditUsername] = useState("");
+  const [editPassword, setEditPassword] = useState("");
+
+  const authConfig = useCallback(() => {
+    return {
+      headers: {
+        "x-access-token":
+          localStorage.getItem("adminToken") || "",
+      },
+    };
+  }, []);
+
+  /*
+   * Load all students and their monthly days eaten.
+   */
+  const loadUsers = useCallback(async () => {
     try {
-      const response = await axios.get(`${apiUrl}/api/users`, config());
-      setUsers(response.data);
+      setLoading(true);
+
+      const response = await axios.get(
+        `${apiUrl}/api/users`,
+        authConfig()
+      );
+
+      const data = response.data;
+
+      let studentList = [];
+
+      if (Array.isArray(data)) {
+        studentList = data;
+      } else if (
+        data &&
+        Array.isArray(data.users)
+      ) {
+        studentList = data.users;
+      }
+
+      setUsers(studentList);
+
+      setCurrentMonth(data?.currentMonth || null);
+      setPreviousMonth(data?.previousMonth || null);
+      setShowPreviousMonth(
+        data?.showPreviousMonth === true
+      );
     } catch (error) {
-      if ([401, 403].includes(error.response?.status)) {
+      console.error("Load students error:", error);
+
+      if (
+        [401, 403].includes(
+          error.response?.status
+        )
+      ) {
         localStorage.removeItem("adminToken");
         router.replace("/admin/login");
-      } else toast.error(error.response?.data?.error || "Failed to fetch students.");
+        return;
+      }
+
+      toast.error(
+        error.response?.data?.error ||
+          "Unable to load students."
+      );
+    } finally {
+      setLoading(false);
     }
-  }, [router]);
+  }, [authConfig, router]);
 
+  /*
+   * Admin authentication.
+   */
   useEffect(() => {
-    isProtected("admin").then((ok) => {
-      if (!ok) router.replace("/admin/login");
-      else fetchUsers();
-    });
-  }, [fetchUsers, router]);
+    const token =
+      localStorage.getItem("adminToken");
 
-  function resetForm() {
-    setEditing(null);
-    setUsername("");
-    setPassword("");
-  }
-
-  async function saveUser(event) {
-    event.preventDefault();
-    if (!username.trim() || (!editing && !password)) {
-      toast.error(editing ? "Username is required." : "Username and password are required.");
+    if (!token) {
+      router.replace("/admin/login");
       return;
     }
 
-    setSaving(true);
-    try {
-      if (editing) {
-        await axios.put(`${apiUrl}/api/users/${editing._id}`, { username: username.trim(), password }, config());
-        toast.success("Student updated.");
-      } else {
-        await axios.post(`${apiUrl}/api/users`, { username: username.trim(), password }, config());
-        toast.success("Student created.");
+    isProtected("admin").then((ok) => {
+      if (!ok) {
+        router.replace("/admin/login");
+        return;
       }
-      resetForm();
-      await fetchUsers();
+
+      loadUsers();
+    });
+  }, [router, loadUsers]);
+
+  /*
+   * Create student.
+   */
+  async function createStudent(event) {
+    event.preventDefault();
+
+    const cleanUsername = username.trim();
+
+    if (!cleanUsername) {
+      toast.error("Username is required.");
+      return;
+    }
+
+    if (!password || password.length < 4) {
+      toast.error(
+        "Password must be at least 4 characters."
+      );
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      await axios.post(
+        `${apiUrl}/api/users`,
+        {
+          username: cleanUsername,
+          password,
+        },
+        authConfig()
+      );
+
+      toast.success("Student created successfully.");
+
+      setUsername("");
+      setPassword("");
+
+      await loadUsers();
     } catch (error) {
-      toast.error(error.response?.data?.error || "Unable to save student.");
+      console.error(
+        "Create student error:",
+        error
+      );
+
+      if (
+        [401, 403].includes(
+          error.response?.status
+        )
+      ) {
+        localStorage.removeItem("adminToken");
+        router.replace("/admin/login");
+        return;
+      }
+
+      toast.error(
+        error.response?.data?.error ||
+          "Unable to create student."
+      );
     } finally {
       setSaving(false);
     }
   }
 
-  async function deleteUser(user) {
-    if (!window.confirm(`Delete ${user.username}? This also removes their meal history.`)) return;
-    try {
-      await axios.delete(`${apiUrl}/api/users/${user._id}`, config());
-      toast.success("Student deleted.");
-      fetchUsers();
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Unable to delete student.");
+  /*
+   * Start editing a student.
+   */
+  function startEdit(user) {
+    setEditingUser(user);
+    setEditUsername(user.username || "");
+    setEditPassword("");
+  }
+
+  /*
+   * Cancel editing.
+   */
+  function cancelEdit() {
+    setEditingUser(null);
+    setEditUsername("");
+    setEditPassword("");
+  }
+
+  /*
+   * Update student.
+   */
+  async function updateStudent(event) {
+    event.preventDefault();
+
+    if (!editingUser) return;
+
+    const cleanUsername = editUsername.trim();
+
+    if (!cleanUsername) {
+      toast.error("Username is required.");
+      return;
     }
+
+    const payload = {
+      username: cleanUsername,
+    };
+
+    if (editPassword.trim()) {
+      if (editPassword.length < 4) {
+        toast.error(
+          "Password must be at least 4 characters."
+        );
+        return;
+      }
+
+      payload.password = editPassword;
+    }
+
+    try {
+      setSaving(true);
+
+      await axios.put(
+        `${apiUrl}/api/users/${editingUser._id || editingUser.id}`,
+        payload,
+        authConfig()
+      );
+
+      toast.success("Student updated successfully.");
+
+      cancelEdit();
+      await loadUsers();
+    } catch (error) {
+      console.error(
+        "Update student error:",
+        error
+      );
+
+      if (
+        [401, 403].includes(
+          error.response?.status
+        )
+      ) {
+        localStorage.removeItem("adminToken");
+        router.replace("/admin/login");
+        return;
+      }
+
+      toast.error(
+        error.response?.data?.error ||
+          "Unable to update student."
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  /*
+   * Delete student.
+   */
+  async function deleteStudent(user) {
+    const confirmed = window.confirm(
+      `Delete student "${user.username}"?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setSaving(true);
+
+      await axios.delete(
+        `${apiUrl}/api/users/${user._id || user.id}`,
+        authConfig()
+      );
+
+      toast.success("Student deleted successfully.");
+
+      await loadUsers();
+    } catch (error) {
+      console.error(
+        "Delete student error:",
+        error
+      );
+
+      if (
+        [401, 403].includes(
+          error.response?.status
+        )
+      ) {
+        localStorage.removeItem("adminToken");
+        router.replace("/admin/login");
+        return;
+      }
+
+      toast.error(
+        error.response?.data?.error ||
+          "Unable to delete student."
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  /*
+   * Logout.
+   */
+  function logout() {
+    localStorage.removeItem("adminToken");
+    router.replace("/admin/login");
+  }
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-slate-50">
+        <div className="mx-auto max-w-7xl px-4 py-10">
+          <Card>
+            <CardContent className="py-12 text-center">
+              Loading students...
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    );
   }
 
   return (
     <main className="min-h-screen bg-slate-50">
-      <Navbar />
-      <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-        <div>
-          <p className="text-sm font-semibold text-indigo-600">ADMIN</p>
-          <h1 className="text-3xl font-black">Student management</h1>
-          <p className="mt-1 text-sm text-slate-500">Create, update and remove student accounts.</p>
-        </div>
+      <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
 
-        <form onSubmit={saveUser} className="rounded-2xl bg-white p-5 shadow-sm">
-          <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto_auto] md:items-end">
-            <div><label className="text-sm font-medium">Username</label><Input className="mt-2" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Registration number" /></div>
-            <div><label className="text-sm font-medium">Password {editing && <span className="font-normal text-slate-400">(leave blank to keep)</span>}</label><Input className="mt-2" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={editing ? "New password" : "Password"} /></div>
-            <Button type="submit" disabled={saving}>{saving ? "Saving…" : editing ? "Update" : "Create"}</Button>
-            {editing && <Button type="button" variant="outline" onClick={resetForm}>Cancel</Button>}
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+              Students
+            </h1>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Manage students and view their monthly
+              mess attendance.
+            </p>
           </div>
-        </form>
 
-        <div className="overflow-x-auto rounded-2xl bg-white shadow-sm">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-              <tr><th className="px-5 py-4">Username</th><th className="px-5 py-4">Created</th><th className="px-5 py-4 text-right">Actions</th></tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user._id} className="border-t">
-                  <td className="px-5 py-4 font-medium">{user.username}</td>
-                  <td className="px-5 py-4 text-slate-500">{user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN") : "—"}</td>
-                  <td className="px-5 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button size="sm" variant="outline" onClick={() => { setEditing(user); setUsername(user.username); setPassword(""); }}>Edit</Button>
-                      <Button size="sm" variant="destructive" onClick={() => deleteUser(user)}>Delete</Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {!users.length && <tr><td colSpan="3" className="px-5 py-10 text-center text-slate-500">No student accounts yet.</td></tr>}
-            </tbody>
-          </table>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() =>
+                router.push("/admin/dashboard")
+              }
+            >
+              Dashboard
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={logout}
+            >
+              Logout
+            </Button>
+          </div>
         </div>
+
+        {/* Create Student */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Add Student</CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <form
+              onSubmit={createStudent}
+              className="grid gap-4 md:grid-cols-[1fr_1fr_auto]"
+            >
+              <Input
+                placeholder="Username"
+                value={username}
+                onChange={(event) =>
+                  setUsername(event.target.value)
+                }
+              />
+
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(event) =>
+                  setPassword(event.target.value)
+                }
+              />
+
+              <Button
+                type="submit"
+                disabled={saving}
+              >
+                {saving
+                  ? "Saving..."
+                  : "Add Student"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Edit Student */}
+        {editingUser && (
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Edit Student
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <form
+                onSubmit={updateStudent}
+                className="grid gap-4 md:grid-cols-[1fr_1fr_auto_auto]"
+              >
+                <Input
+                  placeholder="Username"
+                  value={editUsername}
+                  onChange={(event) =>
+                    setEditUsername(
+                      event.target.value
+                    )
+                  }
+                />
+
+                <Input
+                  type="password"
+                  placeholder="New password (optional)"
+                  value={editPassword}
+                  onChange={(event) =>
+                    setEditPassword(
+                      event.target.value
+                    )
+                  }
+                />
+
+                <Button
+                  type="submit"
+                  disabled={saving}
+                >
+                  Save
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={cancelEdit}
+                >
+                  Cancel
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Students Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>
+                All Students
+              </CardTitle>
+
+              <span className="text-sm text-slate-500">
+                {users.length} student
+                {users.length !== 1
+                  ? "s"
+                  : ""}
+              </span>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-100 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold">
+                      Username
+                    </th>
+
+                    <th className="px-4 py-3 font-semibold">
+                      {currentMonth?.label ||
+                        "Current Month"}{" "}
+                      Days
+                    </th>
+
+                    {showPreviousMonth && (
+                      <th className="px-4 py-3 font-semibold">
+                        {previousMonth?.label ||
+                          "Previous Month"}{" "}
+                        Days
+                      </th>
+                    )}
+
+                    <th className="px-4 py-3 font-semibold">
+                      Created
+                    </th>
+
+                    <th className="px-4 py-3 text-right font-semibold">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {users.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={
+                          showPreviousMonth
+                            ? 5
+                            : 4
+                        }
+                        className="px-4 py-10 text-center text-slate-500"
+                      >
+                        No students found.
+                      </td>
+                    </tr>
+                  ) : (
+                    users.map((user) => (
+                      <tr
+                        key={
+                          user._id ||
+                          user.id ||
+                          user.username
+                        }
+                        className="border-t"
+                      >
+                        {/* Username */}
+                        <td className="px-4 py-3 font-medium text-slate-900">
+                          {user.username}
+                        </td>
+
+                        {/* Current month */}
+                        <td className="px-4 py-3">
+                          <span className="font-semibold text-indigo-600">
+                            {user.currentMonthDays ??
+                              0}
+                          </span>
+                        </td>
+
+                        {/* Previous month */}
+                        {showPreviousMonth && (
+                          <td className="px-4 py-3">
+                            <span className="font-semibold text-slate-600">
+                              {user.previousMonthDays ??
+                                0}
+                            </span>
+                          </td>
+                        )}
+
+                        {/* Created */}
+                        <td className="px-4 py-3 text-slate-500">
+                          {user.createdAt
+                            ? new Date(
+                                user.createdAt
+                              ).toLocaleDateString(
+                                "en-IN"
+                              )
+                            : "—"}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                startEdit(
+                                  user
+                                )
+                              }
+                            >
+                              Edit
+                            </Button>
+
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() =>
+                                deleteStudent(
+                                  user
+                                )
+                              }
+                              disabled={saving}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );
