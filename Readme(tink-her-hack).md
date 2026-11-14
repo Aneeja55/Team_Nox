@@ -1,136 +1,247 @@
-# meSSET🎯
-
+# meSSET 🎯
 
 ## Basic Details
+
 ### Team Name: NOX
 
-
 ### Team Members
-- Member 1: Anagha TR - SCMS School of engineering and technology
-- Member 2: Anaya Wilson - SCMS School of engineering and technology
-- Member 3: Aneeja J - SCMS School of engineering and technology
+- Member 1: Anagha TR - SCMS School of Engineering and Technology
+- Member 2: Anaya Wilson - SCMS School of Engineering and Technology
+- Member 3: Aneeja J - SCMS School of Engineering and Technology
 
 ### Hosted Project Link
-https://team-nox-sable.vercel.app/
+- **Frontend:** Vercel — https://messet-frontend.vercel.app/
+- **Backend:** Render — https://messet-backend.onrender.com/
 
 ### Project Description
-This project is a Digital Mess Card System built with Next.js and Node.js, designed to streamline meal tracking in a cafeteria or mess. It features user authentication with a login page and a dashboard that includes meal components for Lunch and Snack. Each component flips to reveal a QR code scanner, which validates meal consumption within specific time slots (11:30 AM – 2:00 PM for Lunch and 3:30 PM – 5:00 PM for Snack). Users can scan only once per day; multiple scans trigger a beep sound, and the calendar updates—green for a successful scan and red/brown for multiple scans. The dashboard also includes a menu display and logout option for better user experience.
 
-### The Problem statement
-In hostels, students are provided with physical mess cards to access meals in the mess. These cards serve as proof of their eligibility to avail of the mess facilities. However, the reliance on physical cards poses several problems 
-1. Frequent Loss of Cards: Students often misplace their mess cards, leading to the need for replacements.
-2. Additional Costs: Students incur extra expenses every time they need to replace a lost or damaged card.
-3. Inconvenience: Carrying and maintaining a physical card is cumbersome for students.
-4. Manual Verification: Mess staff must manually check each card, which is time-consuming and error-prone.
+meSSET is a Digital Mess Card System designed to simplify and automate meal attendance management in hostels and cafeterias. It replaces traditional physical mess cards with a secure digital platform that uses QR code scanning to record student meal consumption.
+
+The application provides separate interfaces for students and administrators. Students can log in, select their meal session (Lunch or Snacks), scan the QR code displayed at the canteen, and view their meal history through a calendar interface. The system validates scans based on predefined time slots and prevents duplicate meal entries.
+
+Administrators can manage student accounts, generate canteen QR codes, and monitor attendance through a dashboard. With real-time attendance tracking, secure authentication, and automated validation, meSSET makes mess management more convenient, efficient, and reliable.
+
+### The Problem Statement
+
+In hostels, students are traditionally provided with physical mess cards to access meals. These cards serve as proof of their eligibility to use mess facilities. However, relying on physical cards creates several problems:
+
+1. **Frequent Loss of Cards:** Students often misplace their mess cards, requiring replacements.
+2. **Additional Costs:** Students incur extra expenses whenever cards are lost or damaged.
+3. **Inconvenience:** Carrying and maintaining a physical card can be cumbersome.
+4. **Manual Verification:** Mess staff must manually check cards, making the process time-consuming and prone to errors.
+5. **Attendance Management:** Maintaining and tracking meal attendance manually can be difficult and inefficient.
 
 ### The Solution
-A modern solution designed to replace traditional physical mess cards for hostellers. This system provides a secure, convenient, and efficient way for students to access mess facilities while eliminating the hassles of lost or damaged physical cards. This application ensures a seamless user experience with advanced features like QR code scanning, real-time tracking, and more.
-Key Features
-1. Secure Login Page
-Only registered students can log in using their credentials.
-Ensures secure access to the digital mess card system.
-2. Home Page with Lunch and Snacks Options
-The landing page (home page) provides two options:
-Lunch
-Snacks
-3. QR Code Scanner
-Students can scan their QR code during scheduled times:
-Lunch: 11:30 AM to 2:00 PM
-Snacks: 3:30 PM to 5:00 PM
-Only one scan per person per day is allowed for each meal.
-If a student tries to scan more than once, the system produces a beep sound to alert them.
-4. Real-Time Calendar Updates
-After a successful scan, the system updates the student's calendar:
-Lunch: Marks the day with a green color.
-Snacks: Marks the day with a brown color.
-If a student scans more than once, the calendar updates to red for that day.
-5. Profile Page
-Students can view their profile details, including:
-Name
-Registration Number
-Meal History
-6. Logout Option
-Students can securely log out of the system when done.
 
-How It Works
-1. Login:                            (username:admin, password:123)
-Students log in using their registered credentials.
-Unregistered users cannot access the system.
-2. Home Page:
-After logging in, students are directed to the home page.
-They can choose between Lunch or Snacks.
-3. QR Code Scanning:
-Students scan the unique QR code provided below at the canteen during the scheduled time.
-![WhatsApp Image 2025-02-09 at 12 01 25 PM](https://github.com/user-attachments/assets/54766282-984b-4db3-8e86-bb6a9220caf2) (Unique QR code)
+meSSET provides a modern digital alternative to traditional physical mess cards. It offers a secure, convenient, and efficient platform for students to access mess facilities using QR code-based verification.
 
-The system validates the scan and updates the calendar.
-5. Calendar Updates:
-Successful scans are reflected in the calendar with appropriate colors:
-Green for lunch.
-Brown for snacks.
-Red for multiple scans.
-6. Profile and Logout:
-Students can view their profile and meal history.
-They can log out securely when done.
+The system automates meal attendance recording, prevents duplicate scans, and provides administrators with tools to manage students and monitor attendance.
 
-## Technical Details
-### Technologies/Components Used
-For Software:
-- Frontend - React.js
-- Backend - Node.js
-- Frameworks used - Next.js
-- Libraries:
-    bcryptjs
-    cors 
-    dotenv 
-    express
-    jsonwebtoken
-    mongoose
-- vs code, mongodb
+**Key Features**
 
-### Implementation
-For Software:
-# Installation
-npm install
+1. **Secure Login and Authentication**
+   - Separate login interfaces for students and administrators.
+   - JWT-based authentication and role-based access control.
+   - Only registered users can access the system.
+   - Protected student and administrator routes.
 
-# Run
-npm run dev
+2. **Student Dashboard**
+   - Separate options for Lunch and Snacks.
+   - Interactive meal cards that provide access to QR scanning.
+   - Display of meal information and attendance history.
 
-### Project Documentation
-For Software:
+3. **QR Code Scanner**
+   - Students scan the canteen QR code using their device camera.
+   - Lunch: 11:00 AM to 2:00 PM.
+   - Snacks: 3:30 PM to 5:00 PM.
+   - Time-window validation is enforced on the backend.
+   - Only one successful scan per student per meal per day is allowed.
+   - Duplicate scan attempts trigger an audio alert.
 
-# Screenshots (Add at least 3)
-![image](https://github.com/user-attachments/assets/5d75d87b-0db4-4f16-8a9e-474b7c4378cf)    Login page
-Login page where user can login
+4. **Meal History and Calendar**
+   - Displays the student's meal attendance history.
+   - Successful scans are reflected in the calendar.
+   - Duplicate attempts are retained separately so they can be identified without granting another meal.
+   - Helps students keep track of their meal attendance.
 
-![image](https://github.com/user-attachments/assets/fd33b593-01b9-405b-9385-4c659353e098)    Lunch/snack- Home page
-You can choose between lunch and snack and scan qr code
+5. **Admin Dashboard**
+   - Provides an overview of mess attendance.
+   - Allows administrators to monitor student meal activity.
+   - Displays attendance information for effective management.
 
+6. **Student Management**
+   - Administrators can create, edit, and delete student accounts.
+   - View student details and their meal attendance statistics.
+   - Track the number of days each student has used the mess.
 
-![image](https://github.com/user-attachments/assets/1390c782-aeaf-4a84-acae-c69a4189b98f)    QR code Scanner
-Scan qr code using the camera provided which will check whether user has already scanned or not
+7. **QR Code Generation**
+   - Administrators can generate and download canteen QR codes.
+   - Separate QR sessions are maintained for Lunch and Snacks.
+   - QR sessions are validated by the backend.
 
-# Diagrams
-![WhatsApp Image 2025-02-09 at 11 29 07 AM](https://github.com/user-attachments/assets/a2fd4a06-0216-4f81-9632-b02ec9d47cf1)
+8. **Logout**
+   - Students and administrators can securely log out of their respective accounts.
 
+### How It Works
 
-# Build Photos
-![WhatsApp Image 2025-02-09 at 11 32 34 AM](https://github.com/user-attachments/assets/d96f1a24-d4aa-4043-b968-3b8766505b89)
+1. **Login:**
+   - Students log in using their registered credentials.
+   - Administrators use a separate admin login.
+   - Unregistered users cannot access the system.
 
+2. **Student Dashboard:**
+   - After successful login, students are redirected to their dashboard.
+   - They can choose between Lunch and Snacks.
 
-### Project Demo
-# Video
-https://drive.google.com/drive/folders/1wFapt07b-orFGPWAYXm6d8hmbS8-B_-X?usp=drive_link
-How the scanning process works and how the message thereafter received 
+3. **QR Code Scanning:**
+   - Students scan the canteen QR code during the scheduled meal session.
+   - The system validates the QR code, meal session, and time window.
+   - Duplicate scans are detected and an audio alert is played.
 
-# Additional Demos
-https://www.figma.com/design/YlndODZ7JhRPBQn1pCNeLw/Untitled?node-id=0-1&m=dev&t=H5hhkkWYD3v2RHrW-1
-This is how we originally intended the project to be. If possible we will modify our existing project as we originally intended
+   ![Unique QR Code](https://github.com/user-attachments/assets/54766282-984b-4db3-8e86-bb6a9220caf2)
 
-## Team Contributions
-- Aneeja J: Backend with node js
-- Anagha TR: Frontend with next js
-- Anaya Wilson: Frontend with next js
+4. **Attendance Recording:**
+   - Once a scan is successful, the attendance record is stored in the database.
+   - The system prevents multiple successful entries for the same meal and day.
+
+5. **Calendar Updates:**
+   - Students can view their meal attendance through the calendar.
+   - Successful and duplicate scan attempts are represented using different visual indicators.
+
+6. **Admin Management:**
+   - Administrators can generate QR codes, manage student accounts, and monitor attendance through the admin dashboard.
+
+7. **Profile and Logout:**
+   - Students can view their profile and meal history.
+   - Both students and administrators can securely log out.
 
 ---
+
+## Technical Details
+
+### Technologies/Components Used
+
+**For Software:**
+
+- **Frontend:** Next.js 15, React.js
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB / MongoDB Atlas
+- **Authentication:** JSON Web Tokens (JWT), bcrypt
+- **QR Code Scanning:** html5-qrcode
+
+**Libraries and Packages:**
+- bcryptjs
+- cors
+- dotenv
+- express
+- jsonwebtoken
+- mongoose
+- html5-qrcode
+
+**Development Tools:**
+- Visual Studio Code
+- Git and GitHub
+- MongoDB Atlas
+- Vercel
+- Render
+
+### Implementation
+
+**For Software:**
+
+**Installation**
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Aneeja55/Team_Nox.git
+```
+
+Install backend dependencies:
+
+```bash
+cd Backend
+npm install
+```
+
+Install frontend dependencies:
+
+```bash
+cd frontend2
+npm install
+```
+
+**Run**
+
+Start the backend:
+
+```bash
+cd Backend
+npm run dev
+```
+
+Start the frontend in a separate terminal:
+
+```bash
+cd frontend2
+npm run dev
+```
+
+The application runs locally with the frontend and backend communicating through the configured API URL.
+
+### Project Documentation
+
+**For Software:**
+
+#### Screenshots (Add at least 3)
+
+![Login Page](<img width="1916" height="867" alt="image" src="https://github.com/user-attachments/assets/47f7ac55-b0f0-4f05-a8db-453ed4571770" />
+)
+
+**Login Page**
+
+The login interface allows registered students to securely access the digital mess card system.
+
+![Student Dashboard](https://github.com/user-attachments/assets/fd33b593-01b9-405b-9385-4c659353e098)
+
+**Lunch/Snacks - Student Dashboard**
+
+Students can select their meal session and proceed to scan the canteen QR code.
+
+![QR Code Scanner](https://github.com/user-attachments/assets/1390c782-aeaf-4a84-acae-c69a4189b98f)
+
+**QR Code Scanner**
+
+The scanner validates QR codes and checks whether the student has already recorded attendance for the selected meal.
+
+#### Diagrams
+
+![System Diagram](https://github.com/user-attachments/assets/a2fd4a06-0216-4f81-9632-b02ec9d47cf1)
+
+#### Build Photos
+
+![Build Photos](https://github.com/user-attachments/assets/d96f1a24-d4aa-4043-b968-3b8766505b89)
+
+### Project Demo
+
+#### Video
+
+https://drive.google.com/drive/folders/1wFapt07b-orFGPWAYXm6d8hmbS8-B_-X?usp=drive_link
+
+Demonstrates the QR code scanning process and how attendance is recorded.
+
+#### Additional Demos
+
+https://www.figma.com/design/YlndODZ7JhRPBQn1pCNeLw/Untitled?node-id=0-1&m=dev&t=H5hhkkWYD3v2RHrW-1
+
+This is the initial design prototype that inspired the project. The current implementation has been developed further with additional features and a deployed backend.
+
+## Team Contributions
+
+- **Aneeja J:** Backend development using Node.js, Express.js, MongoDB integration, authentication, QR validation, and deployment.
+- **Anagha TR:** Frontend development using Next.js and React.js.
+- **Anaya Wilson:** Frontend development using Next.js and React.js.
+
+---
+
 Made with ❤️ at TinkerHub
