@@ -195,24 +195,37 @@ The application runs locally with the frontend and backend communicating through
 
 #### Screenshots (Add at least 3)
 
-![Login Page](<img width="1916" height="867" alt="image" src="https://github.com/user-attachments/assets/47f7ac55-b0f0-4f05-a8db-453ed4571770" />
-)
+![Login Page](screenshots/login.png)
 
 **Login Page**
 
 The login interface allows registered students to securely access the digital mess card system.
 
-![Student Dashboard](https://github.com/user-attachments/assets/fd33b593-01b9-405b-9385-4c659353e098)
+![Student Dashboard](screenshots/student-dashboard.png)
+
+![Student Dashboard](screenshots/student-dashboard-1.png)
 
 **Lunch/Snacks - Student Dashboard**
 
-Students can select their meal session and proceed to scan the canteen QR code.
+The student dashboard provides access to the available meal sessions, Lunch and Snacks. Students can select their preferred meal session and proceed to scan the canteen QR code. It also provides an easy way to access their meal attendance and history.
 
-![QR Code Scanner](https://github.com/user-attachments/assets/1390c782-aeaf-4a84-acae-c69a4189b98f)
+![QR Scanner](screenshots/qr-scanner.png)
 
 **QR Code Scanner**
 
 The scanner validates QR codes and checks whether the student has already recorded attendance for the selected meal.
+
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+**Admin Dashboard**
+
+The admin dashboard provides an overview of mess attendance and student activity. Administrators can monitor meal attendance, view relevant statistics, and keep track of the overall usage of the mess through a centralized interface.
+
+![Student Management](screenshots/student-management.png)
+
+**Student Management**
+
+The student management section allows administrators to manage registered student accounts. They can add new students, edit existing student details, and delete accounts when required. Administrators can also view individual student attendance statistics, including the number of days they have used the mess.
 
 #### Diagrams
 
