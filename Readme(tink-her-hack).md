@@ -245,7 +245,11 @@ The student management section allows administrators to manage registered studen
 
 #### Video
 
+**Old Demo**
 https://drive.google.com/drive/folders/1wFapt07b-orFGPWAYXm6d8hmbS8-B_-X?usp=drive_link
+
+**New Demo**
+https://drive.google.com/file/d/1Jkjhsgb_mVDCybIOgdlGG-5Vo_GHyCrA/view?usp=drive_link
 
 Demonstrates the QR code scanning process and how attendance is recorded.
 
