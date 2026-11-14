@@ -1,6 +1,10 @@
 # meSSET — Digital Mess Card
 
-meSSET is a digital mess-card system for recording student lunch/snack attendance using a canteen QR code.
+**meSSET is a digital mess-card system for recording student lunch/snack attendance using a canteen QR code.**
+
+**Live Application:** https://messet-frontend.vercel.app/
+
+**Backend API:** https://messet-backend.onrender.com/
 
 ## Current architecture
 
@@ -108,9 +112,12 @@ These are enforced by the backend in `Asia/Kolkata`, so the rule remains correct
 
 ## Deployment
 
-Deploy the backend and frontend separately.
+The application is deployed using separate frontend and backend services.
 
-Backend environment variables:
+- **Frontend:** Vercel — https://messet-frontend.vercel.app/
+- **Backend:** Render — https://messet-backend.onrender.com/
+
+### Backend environment variables
 
 - `MONGO_URI`
 - `JWT_SECRET`
@@ -119,9 +126,11 @@ Backend environment variables:
 - `CLIENT_ORIGIN`
 - `TIMEZONE=Asia/Kolkata`
 
-Frontend:
+### Frontend
 
-- `NEXT_PUBLIC_API_URL=https://<your-backend-domain>`
+```env
+NEXT_PUBLIC_API_URL=https://<your-backend-domain>
+```
 
 Make sure the backend CORS `CLIENT_ORIGIN` exactly matches the deployed frontend origin.
 
