@@ -195,13 +195,15 @@ The application runs locally with the frontend and backend communicating through
 
 #### Screenshots (Add at least 3)
 
-![Login Page](screenshots/login.png)
+1. ![Login Page](screenshots/login.png)
 
 **Login Page**
 
 The login interface allows registered students to securely access the digital mess card system.
 
-![Student Dashboard](screenshots/student-dashboard.png)
+
+2. ![Student Dashboard](screenshots/student-dashboard.png)
+
 
 ![Student Dashboard](screenshots/student-dashboard-1.png)
 
@@ -209,23 +211,27 @@ The login interface allows registered students to securely access the digital me
 
 The student dashboard provides access to the available meal sessions, Lunch and Snacks. Students can select their preferred meal session and proceed to scan the canteen QR code. It also provides an easy way to access their meal attendance and history.
 
-![QR Scanner](screenshots/qr-scanner.png)
+
+3. ![QR Scanner](screenshots/qr-scanner.png)
 
 **QR Code Scanner**
 
 The scanner validates QR codes and checks whether the student has already recorded attendance for the selected meal.
 
-![Admin Dashboard](screenshots/admin-dashboard.png)
+
+4. ![Admin Dashboard](screenshots/admin-dashboard.png)
 
 **Admin Dashboard**
 
 The admin dashboard provides an overview of mess attendance and student activity. Administrators can monitor meal attendance, view relevant statistics, and keep track of the overall usage of the mess through a centralized interface.
 
-![Student Management](screenshots/student-management.png)
+
+5. ![Student Management](screenshots/student-management.png)
 
 **Student Management**
 
 The student management section allows administrators to manage registered student accounts. They can add new students, edit existing student details, and delete accounts when required. Administrators can also view individual student attendance statistics, including the number of days they have used the mess.
+
 
 #### Diagrams
 
